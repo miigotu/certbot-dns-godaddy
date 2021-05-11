@@ -4,8 +4,6 @@ This module defines a certbot plugin to automate the process of completing a
 removing, TXT records using the godaddy CCP API.
 """
 
-__all__     = ['Authenticator']
-
 from lexicon.providers import godaddy
 import zope.interface
 
@@ -42,8 +40,8 @@ class Authenticator(dns_common.DNSAuthenticator):
             'credentials',
             'godaddy credentials INI file',
             {
-                'auth-key':  'Key to access the Godaddy API',
-                'auth-secret': 'Secret to access the Godaddy API',
+                'key': 'Key to access the Godaddy API',
+                'secret': 'Secret to access the Godaddy API',
             }
         )
 
@@ -54,18 +52,17 @@ class Authenticator(dns_common.DNSAuthenticator):
         self._get_godaddy_client().del_txt_record(domain, validation_name, validation)
 
     def _get_godaddy_client(self):
-        credentials = self.credentials.conf
-        return _GodaddyLexiconClient(credentials('auth-key'), credentials('auth-secret'))
+        return _GodaddyLexiconClient(credentials=self.credentials.conf)
 
 
 class _GodaddyLexiconClient(dns_common_lexicon.LexiconClient):
     """Encapsulates all communication with godaddy via Lexicon."""
 
-    def __init__(self, auth_key, auth_secret):
+    def __init__(self, credentials):
         super(_GodaddyLexiconClient, self).__init__()
         config = dns_common_lexicon.build_lexicon_config('godaddy', {}, {
-            'auth-key': auth_key,
-            'auth-secret': auth_secret,
+            'auth-key': credentials('key'),
+            'auth-secret': credentials('secret')
         })
         self.provider = godaddy.Provider(config)
 
