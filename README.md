@@ -19,21 +19,18 @@ Named Arguments
 
 To start using DNS authentication for godaddy, pass the following arguments on certbot's command line:
 
-|---|---|
-|`--authenticator dns-godaddy`|select the authenticator|
-||plugin (Required)|
-|`--dns-godaddy-credentials FILE`|godaddy credentials\_|
-||INI file. (Required)|
-|`--dns-godaddy-propagation-seconds NUM`|| waiting time for DNS to propagate before asking|
-||| the ACME server to verify the DNS record.|
-||| (Default: 10, Recommended: \>= 600)|
+Option|Description|
+---|---|
+`--authenticator dns-godaddy`|select the authenticator plugin (Required)|
+`--dns-godaddy-credentials FILE`|godaddy credentials INI file. (Required)|
+`--dns-godaddy-propagation-seconds NUM`|waiting time for DNS to propagate before asking the ACME server to verify the DNS record. (Default: 30, Recommended: \>= 600)|
 
 You may need to set an unexpectedly high propagation time (≥ 900 seconds) to give the godaddy DNS time to propagate the entries! This may be annoying when calling certbot manually but should not be a problem in automated setups.
 
 Credentials
 -----------
 
-Use of this plugin requires a configuration file containing godaddy API credentials, obtained from your godaddy [account page](https://ccp.godaddy.net/run/daten_aendern.php?sprung=api). See also the [CCP API](https://www.godaddy-wiki.de/wiki/CCP_API) documentation.
+Use of this plugin requires a configuration file containing godaddy API credentials, obtained from your [developer.godaddy.com](developer.godaddy.com).
 
 An example `credentials.ini` file:
 
