@@ -4,12 +4,16 @@ This module defines a certbot plugin to automate the process of completing a
 removing, TXT records using the godaddy CCP API.
 """
 
-from lexicon.providers import godaddy
-import zope.interface
+import logging
 
-from certbot import interfaces
-from certbot.plugins import dns_common
-from certbot.plugins import dns_common_lexicon
+import zope.interface
+from certbot import errors, interfaces
+from certbot.plugins import dns_common, dns_common_lexicon
+from lexicon.providers import godaddy
+from requests.exceptions import RequestException
+
+logger = logging.getLogger(__name__)
+
 
 @zope.interface.implementer(interfaces.IAuthenticator)
 @zope.interface.provider(interfaces.IPluginFactory)
@@ -28,7 +32,7 @@ class Authenticator(dns_common.DNSAuthenticator):
 
     @classmethod
     def add_parser_arguments(cls, add):
-        super(Authenticator, cls).add_parser_arguments(add)
+        super(Authenticator, cls).add_parser_arguments(add,default_propagation_seconds=30)
         add('credentials', help='godaddy credentials INI file.')
 
     def more_info(self):
@@ -46,12 +50,13 @@ class Authenticator(dns_common.DNSAuthenticator):
         )
 
     def _perform(self, domain, validation_name, validation):
-        self._get_godaddy_client().add_txt_record(domain, validation_name, validation)
+        return self.godaddy_client.add_txt_record(domain, validation_name, validation)
 
     def _cleanup(self, domain, validation_name, validation):
-        self._get_godaddy_client().del_txt_record(domain, validation_name, validation)
+        return self.godaddy_client.del_txt_record(domain, validation_name, validation)
 
-    def _get_godaddy_client(self):
+    @property
+    def godaddy_client(self):
         return _GodaddyLexiconClient(credentials=self.credentials.conf)
 
 
@@ -61,13 +66,49 @@ class _GodaddyLexiconClient(dns_common_lexicon.LexiconClient):
     def __init__(self, credentials):
         super(_GodaddyLexiconClient, self).__init__()
         config = dns_common_lexicon.build_lexicon_config('godaddy', {}, {
-            'auth-key': credentials('key'),
-            'auth-secret': credentials('secret')
+            'auth_key': credentials('key'),
+            'auth_secret': credentials('secret')
         })
+
         self.provider = godaddy.Provider(config)
 
-    # called while guessing domain name (going from most specific to tld):
-    def _handle_general_error(self, e, domain_name):
-        if 'Value in field domainname does not match requirements' in str(e):
-            return None
-        return super(_GodaddyLexiconClient, self)._handle_general_error(e, domain_name)
+    def add_txt_record(self, domain, record_name, record_content):
+        """
+        Add a TXT record using the supplied information.
+
+        :param str domain: The domain to use to look up the managed zone.
+        :param str record_name: The record name (typically beginning with '_acme-challenge.').
+        :param str record_content: The record content (typically the challenge validation).
+        :raises errors.PluginError: if an error occurs communicating with the DNS Provider API
+        """
+        try:
+            self._find_domain_id(domain)
+        except errors.PluginError as e:
+            logger.debug('Encountered error finding domain_id during add: %s', e, exc_info=True)
+            return
+
+        try:
+            self.provider.create_record(*['TXT', record_name, record_content])
+        except RequestException as e:
+            logger.debug('Encountered error adding TXT record: %s', e, exc_info=True)
+            raise errors.PluginError('Error adding TXT record: {0}'.format(e))
+
+    def del_txt_record(self, domain, record_name, record_content):
+        """
+        Delete a TXT record using the supplied information.
+
+        :param str domain: The domain to use to look up the managed zone.
+        :param str record_name: The record name (typically beginning with '_acme-challenge.').
+        :param str record_content: The record content (typically the challenge validation).
+        :raises errors.PluginError: if an error occurs communicating with the DNS Provider  API
+        """
+        try:
+            self._find_domain_id(domain)
+        except errors.PluginError as e:
+            logger.debug('Encountered error finding domain_id during deletion: %s', e, exc_info=True)
+            return
+
+        try:
+            self.provider.delete_record(*['TXT', record_name, record_content])
+        except RequestException as e:
+            logger.debug('Encountered error deleting TXT record: %s', e, exc_info=True)
