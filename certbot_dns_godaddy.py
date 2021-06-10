@@ -11,6 +11,7 @@ from certbot import errors, interfaces
 from certbot.plugins import dns_common, dns_common_lexicon
 from lexicon.providers import godaddy
 from requests.exceptions import RequestException
+import tldextract
 
 logger = logging.getLogger(__name__)
 
@@ -81,8 +82,9 @@ class _GodaddyLexiconClient(dns_common_lexicon.LexiconClient):
         :param str record_content: The record content (typically the challenge validation).
         :raises errors.PluginError: if an error occurs communicating with the DNS Provider API
         """
+        ex = tldextract.extract(domain)
         try:
-            self._find_domain_id(domain)
+            self._find_domain_id(ex.registered_domain)
         except errors.PluginError as e:
             logger.debug('Encountered error finding domain_id during add: %s', e, exc_info=True)
             return
@@ -102,8 +104,9 @@ class _GodaddyLexiconClient(dns_common_lexicon.LexiconClient):
         :param str record_content: The record content (typically the challenge validation).
         :raises errors.PluginError: if an error occurs communicating with the DNS Provider  API
         """
+        ex = tldextract.extract(domain)
         try:
-            self._find_domain_id(domain)
+            self._find_domain_id(ex.registered_domain)
         except errors.PluginError as e:
             logger.debug('Encountered error finding domain_id during deletion: %s', e, exc_info=True)
             return
