@@ -59,6 +59,7 @@ jobs:
             ${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:latest
   Poetry:
+    needs: [Shellcheck]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
