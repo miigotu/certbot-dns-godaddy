@@ -4,3 +4,4 @@ dist
 *.log*
 work
 yarn.lock
+node_modules

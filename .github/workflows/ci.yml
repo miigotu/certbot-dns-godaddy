@@ -7,20 +7,34 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker:
+  ShellCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Shellcheck
+        uses: ludeeus/action-shellcheck@master
+
+  Docker:
+    needs: [Shellcheck]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Set up QEMU
+        if: success()
         id: qemu
         uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
+        if: success()
         uses: docker/setup-buildx-action@v1
 
       - name: Login to GitHub Container Registry
+        if: success()
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -28,31 +42,27 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to DockerHub
+        if: success()
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
+        if: success()
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms:  ${{ steps.qemu.outputs.platforms }}
           push: true
           tags: |
-            ${{ github.repository }}:${{ github.sha }}
-
-      - name: Push Image to multiple registries
-        uses: akhilerm/tag-push-action@v1.0.0
+            ${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:latest
+  Poetry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v1.6
         with:
-          src: docker.io/${{ github.repository }}:${{ github.sha }}
-          dst: |
-            ghcr.io/${{ steps.qemu.outputs.platforms }}:${{ github.sha }}
-
-      - name: Tag latest
-        uses: akhilerm/tag-push-action@v1.0.0
-        with:
-          src: docker.io/${{ github.repository }}:${{ github.sha }}
-          dst: |
-            docker.io/${{ github.repository }}:latest
-            ghcr.io/${{ steps.qemu.outputs.platforms }}:latest
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
