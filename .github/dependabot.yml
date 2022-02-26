@@ -1,0 +1,17 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  target-branch: dev
+- package-ecosystem: github-actions
+  directory: "/"
+  target-branch: dev
+  schedule:
+    interval: daily
+- package-ecosystem: docker
+  directory: "/"
+  target-branch: dev
+  schedule:
+    interval: daily
