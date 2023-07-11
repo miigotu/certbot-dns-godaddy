@@ -7,7 +7,7 @@ certbot-dns-godaddy
 
 This plugin automates the process of completing a `dns-01` challenge by creating, and subsequently removing, `TXT` records using the godaddy [API](https://developer.godaddy.com/doc/endpoint/domains) via [lexicon](https://github.com/AnalogJ/lexicon).
 
-**Note:** This manual assumes certbot ≥ v1.7, which has improved the naming scheme for external plugins. If you cannot upgrade, please also refer to the Old option naming scheme\_ section below.
+**Note:** This manual assumes certbot ≥ v1.7, which has improved the naming scheme for external plugins. If you cannot upgrade, please  refer to the "Old option naming scheme" section below.
 
 Installation
 ------------
@@ -35,8 +35,8 @@ Use of this plugin requires a configuration file containing godaddy API credenti
 An example `credentials.ini` file:
 
 ``` {.sourceCode .ini}
-dns_godaddy_secret      = 0123456789abcdef0123456789abcdef01234567
 dns_godaddy_key = abcdef0123456789abcdef01234567abcdef0123
+dns_godaddy_secret = 0123456789abcdef0123456789abcdef01234567
 ```
 
 The path to this file can be provided interactively or using the `--dns-godaddy-credentials` command-line argument. Certbot records the path to this file for use during renewal, but does not store the file's contents.
@@ -50,13 +50,13 @@ Examples
 
 To acquire a single certificate for both `example.com` and `*.example.com`, waiting 900 seconds for DNS propagation:
 
-    certbot certonly \\
-      --authenticator dns-godaddy \\
-      --dns-godaddy-credentials ~/.secrets/certbot/godaddy.ini \\
-      --dns-godaddy-propagation-seconds 900 \\
+    sudo certbot certonly \
+      --authenticator dns-godaddy \
+      --dns-godaddy-propagation-seconds 900 \      
+      --dns-godaddy-credentials /var/lib/letsencrypt/godaddy_credentials.ini \
       --keep-until-expiring --non-interactive --expand \
       --server https://acme-v02.api.letsencrypt.org/directory \
-      -d 'example.com' \\
+      -d 'example.com' \
       -d '*.example.com'
 
 Docker
@@ -78,8 +78,8 @@ Once that's finished, the application can be run as follows:
         --dns-godaddy-credentials /var/lib/letsencrypt/godaddy_credentials.ini \
         --keep-until-expiring --non-interactive --expand \
         --server https://acme-v02.api.letsencrypt.org/directory \
-        --agree-tos --email "webmaster@example.com" \
-        -d example.com -d '*.example.com'
+        -d 'example.com' \
+        -d '*.example.com'
 
 You may want to change the volumes `/var/lib/letsencrypt` and `/etc/letsencrypt` to local directories where the certificates and configuration should be stored.
 
@@ -94,9 +94,9 @@ If you're using a certbot version below `v1.7` all options related to external p
     --certbot-dns-godaddy:dns-godaddy-credentials
     --certbot-dns-godaddy:dns-godaddy-propagation-seconds
 
-Further, every occurence of `dns_godaddy` in the config file must be prefixed by `certbot_dns_godaddy:`, resulting in a file like this:
+Same apploes to the config file, every occurence of `dns_godaddy` in file, must be prefixed by `certbot_dns_godaddy:` resulting in a file looking like this:
 
 ``` {.sourceCode .ini}
-certbot_dns_godaddy:dns_godaddy_key      = ...
+certbot_dns_godaddy:dns_godaddy_key = ...
 certbot_dns_godaddy:dns_godaddy_secret = ...
 ```
