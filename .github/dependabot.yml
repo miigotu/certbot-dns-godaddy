@@ -5,26 +5,13 @@ updates:
   target-branch: dev
   schedule:
     interval: daily
-  allow:
-    dependency-type: all
 - package-ecosystem: github-actions
   directory: "/"
   target-branch: dev
   schedule:
     interval: daily
-  allow:
-    dependency-type: all
 - package-ecosystem: docker
   directory: "/"
   target-branch: dev
   schedule:
     interval: daily
-  allow:
-    dependency-type: all
-- package-ecosystem: npm
-  directory: "/"
-  target-branch: dev
-  schedule:
-    interval: daily
-  allow:
-    dependency-type: all

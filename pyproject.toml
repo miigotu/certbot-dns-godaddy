@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "certbot-dns-godaddy"
-version = "0.2.3"
+version = "0.2.4"
 description = "A certbot plugin that implements letsencrypt dns wildcard support for godaddy using lexicon"
 authors = ["Dustyn Gibson <miigotu@gmail.com>"]
 license = "Apache-2.0"
