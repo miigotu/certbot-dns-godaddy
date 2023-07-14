@@ -82,16 +82,8 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3
-#          cache: 'pip'
-      - name: Generate setup.py
-        run: |
-          pip install poetry2setup
-          poetry2setup > setup.py
-          sh upstream/tools/snap/generate_dnsplugins_snapcraft.sh
-          rm -rf upstream
-#      - name: Install Snapcraft with LXD
-#        uses: samuelmeuli/action-snapcraft@v1
-#        with:
-#          use_lxd: true
-#      - name: Build snap
-#        run: sg lxd -c 'snapcraft --use-lxd'
+          cache: pip
+      - name: Install Snapcraft with LXD
+        uses: samuelmeuli/action-snapcraft@v2
+      - name: Build snap
+        run: sg lxd -c 'snapcraft --use-lxd'
