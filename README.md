@@ -30,7 +30,7 @@ You may need to set an unexpectedly high propagation time (≥ 900 seconds) to g
 Credentials
 -----------
 
-Use of this plugin requires a configuration file containing godaddy API credentials, obtained from your [developer.godaddy.com](developer.godaddy.com).
+Use of this plugin requires a configuration file containing godaddy API credentials, obtained from your [developer.godaddy.com](https://developer.godaddy.com/).
 
 An example `credentials.ini` file:
 
