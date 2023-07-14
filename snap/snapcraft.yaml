@@ -11,9 +11,8 @@ parts:
   certbot-dns-godaddy:
     plugin: python
     source: .
-    override-pull: |
-        snapcraftctl pull
-        snapcraftctl set-version `grep ^version $SNAPCRAFT_PART_SRC/setup.py | cut -f2 -d= | tr -d "'[:space:]"`
+     parse-info:
+      - pyproject.toml
     build-environment:
       # Constraints are passed through the environment variable PIP_CONSTRAINTS instead of using the
       # parts.[part_name].constraints option available in snapcraft.yaml when the Python plugin is
