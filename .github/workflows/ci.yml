@@ -14,11 +14,11 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Shellcheck
+      - name: ShellCheck
         uses: ludeeus/action-shellcheck@master
 
   Docker:
-    needs: [Shellcheck]
+    needs: [ShellCheck]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,7 +59,7 @@ jobs:
             ${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:latest
   Poetry:
-    needs: [Shellcheck]
+    needs: [ShellCheck]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -67,3 +67,22 @@ jobs:
         uses: JRubics/poetry-publish@v1.6
         with:
           pypi_token: ${{ secrets.PYPI_TOKEN }}
+  Snapcraft:
+    needs: [ShellCheck]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: certbot/certbot
+          path: upstream
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3
+          cache: pip
+      - name: Install Snapcraft with LXD
+        uses: samuelmeuli/action-snapcraft@v2
+      - name: Build snap
+        run: sg lxd -c 'snapcraft --use-lxd'
