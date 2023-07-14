@@ -94,7 +94,7 @@ If you're using a certbot version below `v1.7` all options related to external p
     --certbot-dns-godaddy:dns-godaddy-credentials
     --certbot-dns-godaddy:dns-godaddy-propagation-seconds
 
-Same apploes to the config file, every occurence of `dns_godaddy` in file, must be prefixed by `certbot_dns_godaddy:` resulting in a file looking like this:
+Same applies to the config file, every occurence of `dns_godaddy` in file, must be prefixed by `certbot_dns_godaddy:` resulting in a file looking like this:
 
 ``` {.sourceCode .ini}
 certbot_dns_godaddy:dns_godaddy_key = ...
