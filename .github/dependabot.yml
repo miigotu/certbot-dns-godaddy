@@ -19,12 +19,3 @@ updates:
   target-branch: dev
   schedule:
     interval: daily
-  allow:
-    dependency-type: all
-- package-ecosystem: npm
-  directory: "/"
-  target-branch: dev
-  schedule:
-    interval: daily
-  allow:
-    dependency-type: all
