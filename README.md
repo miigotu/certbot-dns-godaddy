@@ -78,6 +78,7 @@ Once that's finished, the application can be run as follows:
         --dns-godaddy-credentials /var/lib/letsencrypt/godaddy_credentials.ini \
         --keep-until-expiring --non-interactive --expand \
         --server https://acme-v02.api.letsencrypt.org/directory \
+        --agree-tos --email "webmaster@example.com" \
         -d 'example.com' \
         -d '*.example.com'
 
