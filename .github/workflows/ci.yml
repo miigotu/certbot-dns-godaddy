@@ -4,36 +4,112 @@ on:
   push:
     branches:
       - 'main'
+      - 'dev'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+env:
+  SLEEP: 60
+  DOCKER_BUILDKIT: '1'
+  TARGET_PLATFORMS: "linux/amd64,linux/arm64,linux/arm/v6"
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  ShellCheck:
+  lint:
+    name: Lint files
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      -
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Shellcheck
+      -
+        name: Check shell scripts
         uses: ludeeus/action-shellcheck@master
-
-  Docker:
-    needs: [Shellcheck]
+  environment:
+    name: Set up environment for docker and poetry
+    needs: [shellcheck]
+    runs-on: ubuntu-latest
+    outputs:
+      docker_tags: ${{ steps.docker.outputs.tags }}
+      docker_labels: ${{ steps.docker.outputs.labels }}
+    steps:
+    -
+      name: Cache environment files
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkitd.toml
+        key: ${{ github.workflow }}-environment
+    -
+      name: Create buildkitd config
+      run: |
+        echo 'experimantal = true' > /tmp/buildkitd.toml
+        echo 'debug = true' >> /tmp/buildkitd.toml
+        echo 'insecure-entitlements  = [ "security.insecure" ]' >> /tmp/buildkitd.toml
+        # echo '[worker.oci]' >> /tmp/buildkitd.toml
+        # echo 'max-parallelism = 1' >> /tmp/buildkitd.toml
+        cat /tmp/buildkitd.toml
+    -
+      name: Set up Docker metadata
+      id: docker
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          ${{ github.repository }}
+          ghcr.io/${{ github.repository }}
+        labels: |
+          org.opencontainers.image.source=https://github.com/miigotu/certbot-dns-godaddy
+          org.opencontainers.image.url=https://github.com/miigotu/certbot-dns-godaddy
+          org.opencontainers.image.licenses=Apache-2.0
+        tags: |
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=tag
+          type=ref,event=pr
+          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.run_id }},event=push
+          type=raw,prefix=${{ github.ref_name }},suffix=,value=${{ github.sha }},event=push
+          type=raw,prefix=,suffix=,value=${{ github.head_ref }},event=pr
+          type=raw,prefix=,suffix=,value=${{ github.ref_name }},event=push,enable=${{ github.event_name != 'pull_request' }}
+          type=edge,branch=dev
+          type=semver,pattern={{version}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+          type=semver,pattern={{major}}.{{minor}},enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+  docker:
+    name: Build and push docker images
+    needs: [environment, lint]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      -
+        name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up QEMU
+      -
+        name: Restore environment files
+        uses: actions/cache@v3
+        with:
+          path: /tmp/buildkitd.toml
+          key: ${{ github.workflow }}-environment
+          restore-keys: ${{ github.workflow }}-environment
+      -
+        name: Set up QEMU
         if: success()
         id: qemu
         uses: docker/setup-qemu-action@v2
 
-      - name: Set up Docker Buildx
+      -
+        name: Set up Docker Buildx
         if: success()
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to GitHub Container Registry
+      -
+        name: Login to GitHub Container Registry
         if: success()
         uses: docker/login-action@v2
         with:
@@ -41,29 +117,33 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to DockerHub
+      -
+        name: Login to DockerHub
         if: success()
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      -
+        name: Build and push docker image
         if: success()
         uses: docker/build-push-action@v4
         with:
           context: .
-          platforms:  "linux/amd64,linux/arm64,linux/arm/v6"
-          push: true
-          tags: |
-            ${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:latest
-  Poetry:
-    needs: [Shellcheck]
+          platforms: ${{ env.TARGET_PLATFORMS }}
+          push: ${{ github.event_name != 'pull_request' }}
+          labels: ${{ needs.environment.outputs.docker_labels }}
+          tags: ${{ needs.environment.outputs.docker_tags }}
+  poetry:
+    name: Build and publish wheels
+    needs: [environment, lint, docker]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Build and publish to pypi
+      -
+        uses: actions/checkout@v3
+      -
+        name: Build and publish to pypi
         uses: JRubics/poetry-publish@v1.6
         with:
           pypi_token: ${{ secrets.PYPI_TOKEN }}

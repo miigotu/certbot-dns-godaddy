@@ -1,7 +1,6 @@
 .idea
+.venv
 dist
 *.ini
 *.log*
 work
-yarn.lock
-node_modules
