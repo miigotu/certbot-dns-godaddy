@@ -35,7 +35,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
   environment:
     name: Set up environment for docker and poetry
-    needs: [shellcheck]
+    needs: [lint]
     runs-on: ubuntu-latest
     outputs:
       docker_tags: ${{ steps.docker.outputs.tags }}
