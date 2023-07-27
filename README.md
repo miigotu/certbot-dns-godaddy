@@ -7,23 +7,31 @@ certbot-dns-godaddy
 
 This plugin automates the process of completing a `dns-01` challenge by creating, and subsequently removing, `TXT` records using the godaddy [API](https://developer.godaddy.com/doc/endpoint/domains) via [lexicon](https://github.com/AnalogJ/lexicon).
 
-**Note:** This manual assumes certbot ≥ v1.7, which has improved the naming scheme for external plugins. If you cannot upgrade, please also refer to the Old option naming scheme\_ section below.
+**Note:** This manual assumes certbot 2.6.0, which has improved the naming scheme for external plugins.
 
 Installation
 ------------
 
-    pip install certbot-dns-godaddy
+    # create a virtual environment, to avoid conflicts
+    python3 -m venv /some/path
+
+    # use the pip in the virtual environment to install or update
+    /some/path/bin/pip install -U certbot-dns-godaddy
+
+    # yse the cerbot from the virtualenv, to avoid accidentally
+    # using one from a different environment that does not have this library
+    /some/path/bin/certbot
 
 Named Arguments
 ---------------
 
 To start using DNS authentication for godaddy, pass the following arguments on certbot's command line:
 
-Option|Description|
----|---|
-`--authenticator dns-godaddy`|select the authenticator plugin (Required)|
-`--dns-godaddy-credentials FILE`|godaddy credentials INI file. (Required)|
-`--dns-godaddy-propagation-seconds NUM`|waiting time for DNS to propagate before asking the ACME server to verify the DNS record. (Default: 30, Recommended: \>= 600)|
+| Option                                  | Description                                                                           |
+|-----------------------------------------|---------------------------------------------------------------------------------------|
+| `--authenticator dns-godaddy`           | select the authenticator plugin (Required)                                            |
+| `--dns-godaddy-credentials FILE`        | godaddy credentials INI file. (Required)                                              |
+| `--dns-godaddy-propagation-seconds NUM` | how long to wait before ACME tries to verify DNS. (Default: 30, Recommended: \>= 600) |
 
 You may need to set an unexpectedly high propagation time (≥ 900 seconds) to give the godaddy DNS time to propagate the entries! This may be annoying when calling certbot manually but should not be a problem in automated setups.
 
@@ -82,21 +90,3 @@ Once that's finished, the application can be run as follows:
         -d example.com -d '*.example.com'
 
 You may want to change the volumes `/var/lib/letsencrypt` and `/etc/letsencrypt` to local directories where the certificates and configuration should be stored.
-
-Old option naming scheme
-------------------------
-
-It is recommended to use the newest certbot version, at least `v1.7`.
-
-If you're using a certbot version below `v1.7` all options related to external plugins (such as this one) must be prefixed by the name of the plugin. This means that every occurence of `dns-godaddy` in the command line options must be replaced by `certbot-dns-godaddy:dns-godaddy`, i.e.:
-
-    --authenticator certbot-dns-godaddy:dns-godaddy
-    --certbot-dns-godaddy:dns-godaddy-credentials
-    --certbot-dns-godaddy:dns-godaddy-propagation-seconds
-
-Further, every occurence of `dns_godaddy` in the config file must be prefixed by `certbot_dns_godaddy:`, resulting in a file like this:
-
-``` {.sourceCode .ini}
-certbot_dns_godaddy:dns_godaddy_key      = ...
-certbot_dns_godaddy:dns_godaddy_secret = ...
-```
