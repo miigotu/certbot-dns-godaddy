@@ -330,13 +330,13 @@ files = [
 
 [[package]]
 name = "dns-lexicon"
-version = "3.12.0"
+version = "3.13.0"
 description = "Manipulate DNS records on various DNS providers in a standardized/agnostic way"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "dns_lexicon-3.12.0-py3-none-any.whl", hash = "sha256:9ee54127388ab22cf5ef80a97072e53ca00f9957f6905069266eef522e48a3f2"},
-    {file = "dns_lexicon-3.12.0.tar.gz", hash = "sha256:13eec59c2d9364288e88506f7d2dc5c295e9d15f0ddce3137535490669bdb5ff"},
+    {file = "dns_lexicon-3.13.0-py3-none-any.whl", hash = "sha256:34687a093b1d1a4a32ab1669bbf2d45ba3d312c0930dfcdd3d198849deb222be"},
+    {file = "dns_lexicon-3.13.0.tar.gz", hash = "sha256:38e1db9f325e6dc92e8e5c80da24f1e15ab59598a67911e7aad987c2ff3456f6"},
 ]
 
 [package.dependencies]
@@ -457,7 +457,7 @@ name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
 optional = false
-python-versions = "*"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "pycparser-2.21-py2.py3-none-any.whl", hash = "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9"},
     {file = "pycparser-2.21.tar.gz", hash = "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"},
