@@ -330,13 +330,13 @@ files = [
 
 [[package]]
 name = "dns-lexicon"
-version = "3.13.0"
+version = "3.14.1"
 description = "Manipulate DNS records on various DNS providers in a standardized/agnostic way"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "dns_lexicon-3.13.0-py3-none-any.whl", hash = "sha256:34687a093b1d1a4a32ab1669bbf2d45ba3d312c0930dfcdd3d198849deb222be"},
-    {file = "dns_lexicon-3.13.0.tar.gz", hash = "sha256:38e1db9f325e6dc92e8e5c80da24f1e15ab59598a67911e7aad987c2ff3456f6"},
+    {file = "dns_lexicon-3.14.1-py3-none-any.whl", hash = "sha256:31219c0b93a3cb32377e829314b685c3e5fb2e434049fe38793436a1fff8c5e2"},
+    {file = "dns_lexicon-3.14.1.tar.gz", hash = "sha256:fa1d71b79bc7e3d056b0aab1a11160d57d7c524eaa50f4303552d6aff2ffe514"},
 ]
 
 [package.dependencies]
@@ -350,11 +350,11 @@ tldextract = ">=2"
 [package.extras]
 ddns = ["dnspython (>=2)"]
 duckdns = ["dnspython (>=2)"]
-full = ["boto3 (>=1.25)", "dnspython (>=2)", "localzone (>=0.9.8)", "oci (>=2)", "softlayer (>=5)", "zeep (>=3)"]
+full = ["boto3 (>=1.28)", "dnspython (>=2)", "localzone (>=0.9.8)", "oci (>=2)", "softlayer (>=5)", "zeep (>=3)"]
 gransy = ["zeep (>=3)"]
 localzone = ["localzone (>=0.9.8)"]
 oci = ["oci (>=2)"]
-route53 = ["boto3 (>=1.25)"]
+route53 = ["boto3 (>=1.28)"]
 softlayer = ["softlayer (>=5)"]
 
 [[package]]
