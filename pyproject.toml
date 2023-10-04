@@ -31,7 +31,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-acme = "2.6.0"
+acme = "2.7.0"
 certbot = "2.6.0"
 dns-lexicon = ">=3.2.3"
 "zope.interface" = ">=5.4.0"
