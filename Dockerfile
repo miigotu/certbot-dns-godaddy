@@ -1,4 +1,4 @@
-ARG VERSION=v2.6.0
+ARG VERSION=v2.7.4
 FROM certbot/certbot:$VERSION
 
 LABEL org.opencontainers.image.source="https://github.com/miigotu/certbot-dns-godaddy"
