@@ -31,10 +31,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-acme = "2.6.0"
-certbot = "2.6.0"
-dns-lexicon = ">=3.2.3"
-"zope.interface" = ">=5.4.0"
+certbot = ">=2.7.4"
+dns-lexicon = ">=3.14.0"
 
 [tool.poetry.dev-dependencies]
 isort = "^5.8.0"
