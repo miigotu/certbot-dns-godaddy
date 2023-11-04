@@ -4,3 +4,4 @@ dist
 *.ini
 *.log*
 work
+.vscode
