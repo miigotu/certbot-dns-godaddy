@@ -7,7 +7,7 @@ certbot-dns-godaddy
 
 This plugin automates the process of completing a `dns-01` challenge by creating, and subsequently removing, `TXT` records using the godaddy [API](https://developer.godaddy.com/doc/endpoint/domains) via [lexicon](https://github.com/AnalogJ/lexicon).
 
-**Note:** This manual assumes certbot 2.6.0, which has improved the naming scheme for external plugins.
+**Note:** This manual assumes certbot >=2.7.4 which has improved the naming scheme for external plugins.
 
 Installation
 ------------
