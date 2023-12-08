@@ -20,7 +20,7 @@ class Authenticator(dns_common_lexicon.LexiconDNSAuthenticator):
 
     description = ('Obtain certificates using a DNS TXT record (if you are '
                    'using GoDaddy for DNS).')
-    
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._add_provider_option('key',
@@ -35,11 +35,18 @@ class Authenticator(dns_common_lexicon.LexiconDNSAuthenticator):
                              default_propagation_seconds: int = 30) -> None:
         super().add_parser_arguments(add, default_propagation_seconds)
         add('credentials', help='GoDaddy credentials INI file.')
-    
+
     def more_info(self) -> str:
         return ('This plugin configures a DNS TXT record to respond to a '
                 'dns-01 challenge using the godaddy API.')
-    
+
     @property
     def _provider_name(self) -> str:
         return 'godaddy'
+
+    @property
+    def _ttl(self) -> int:
+        """
+        Time to live to apply to the DNS records created by this Authenticator
+        """
+        return 600
