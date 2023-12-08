@@ -18,6 +18,8 @@ class Authenticator(dns_common_lexicon.LexiconDNSAuthenticator):
     This Authenticator uses the GoDaddy API to fulfill a dns-01 challenge.
     """
 
+    ttl = 600
+
     description = ('Obtain certificates using a DNS TXT record (if you are '
                    'using GoDaddy for DNS).')
     
