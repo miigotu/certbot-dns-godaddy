@@ -32,6 +32,7 @@ To start using DNS authentication for godaddy, pass the following arguments on c
 | `--authenticator dns-godaddy`           | select the authenticator plugin (Required)                                            |
 | `--dns-godaddy-credentials FILE`        | godaddy credentials INI file. (Required)                                              |
 | `--dns-godaddy-propagation-seconds NUM` | how long to wait before ACME tries to verify DNS. (Default: 30, Recommended: \>= 600) |
+| `--dns-godaddy-ttl NUM`  | TTL for TXT record. (Default 600. For WildCard >= 600 )
 
 You may need to set an unexpectedly high propagation time (≥ 900 seconds) to give the godaddy DNS time to propagate the entries! This may be annoying when calling certbot manually but should not be a problem in automated setups.
 
@@ -62,6 +63,7 @@ To acquire a single certificate for both `example.com` and `*.example.com`, wait
       --authenticator dns-godaddy \\
       --dns-godaddy-credentials ~/.secrets/certbot/godaddy.ini \\
       --dns-godaddy-propagation-seconds 900 \\
+      --dns-godaddy-ttl 600 \\
       --keep-until-expiring --non-interactive --expand \
       --server https://acme-v02.api.letsencrypt.org/directory \
       -d 'example.com' \\
@@ -83,6 +85,7 @@ Once that's finished, the application can be run as follows:
       miigotu/certbot-dns-godaddy certbot certonly \
         --authenticator dns-godaddy \
         --dns-godaddy-propagation-seconds 900 \
+        --dns-godaddy-ttl 600 \
         --dns-godaddy-credentials /var/lib/letsencrypt/godaddy_credentials.ini \
         --keep-until-expiring --non-interactive --expand \
         --server https://acme-v02.api.letsencrypt.org/directory \
@@ -90,3 +93,8 @@ Once that's finished, the application can be run as follows:
         -d example.com -d '*.example.com'
 
 You may want to change the volumes `/var/lib/letsencrypt` and `/etc/letsencrypt` to local directories where the certificates and configuration should be stored.
+
+Exception
+---------
+
+If receives error like invalid argument `dns-godaddy-ttl`. Goto `/etc/letsencrypt/renewal/[YOURDOMAIN].conf` and edit file and in the end add `dns_godaddy_ttl = 600`. This is required once and then subssequent requests will not fail

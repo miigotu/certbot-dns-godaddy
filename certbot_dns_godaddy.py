@@ -20,8 +20,11 @@ class Authenticator(dns_common_lexicon.LexiconDNSAuthenticator):
 
     description = ('Obtain certificates using a DNS TXT record (if you are '
                    'using GoDaddy for DNS).')
-    
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        
+        params_dict = args[0].to_dict()
+        self.ttl = str(params_dict.get("dns_godaddy_ttl", 600))
         super().__init__(*args, **kwargs)
         self._add_provider_option('key',
                                   'Key to access the Godaddy API',
@@ -43,3 +46,10 @@ class Authenticator(dns_common_lexicon.LexiconDNSAuthenticator):
     @property
     def _provider_name(self) -> str:
         return 'godaddy'
+    
+    @property
+    def _ttl(self) -> int:
+        """
+        Time to live to apply to the DNS records created by this Authenticator
+        """
+        return self.ttl
