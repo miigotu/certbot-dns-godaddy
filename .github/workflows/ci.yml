@@ -43,7 +43,7 @@ jobs:
     steps:
     -
       name: Cache environment files
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: /tmp/buildkitd.toml
         key: ${{ github.workflow }}-environment
@@ -92,7 +92,7 @@ jobs:
 
       -
         name: Restore environment files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/buildkitd.toml
           key: ${{ github.workflow }}-environment
